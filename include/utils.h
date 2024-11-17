@@ -1,0 +1,103 @@
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <gmp.h>
+#include <stdint.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "../lib/mdr/lib-mesg.h"
+#include "../lib/mdr/lib-misc.h"
+
+#include <nettle/sha3.h>
+
+#define hash_digest_len SHA3_256_DIGEST_SIZE
+#define hash_context sha3_256_ctx
+
+#define hash_function_init sha3_256_init
+#define hash_function_update sha3_256_update
+#define hash_function_digest sha3_256_digest
+
+#define PRIME_ITERATIONS 12
+
+typedef struct
+{
+    mpz_t x;
+    mpz_t y;
+} mpz_point_t;
+
+/**
+ * @brief Sets a random prime number to `dst` with `l` bits, congruent to 3 mod 4.
+ *
+ * @param[out] dst The generated prime number.
+ * @param[in] prng The random state used to generate the prime number.
+ * @param[in] l The number of bits for the generated prime number.
+ */
+void mpz_set_lbit_prime(mpz_t dst, gmp_randstate_t prng, __uint32_t l);
+
+/**
+ * @brief Sets a random number to `dst` that is coprime to `n`.
+ *
+ * @param[out] dst The generated coprime number.
+ * @param[in] n The modulus used to ensure coprimality.
+ * @param[in] prng The random state used to generate the number.
+ */
+void mpz_set_random_n_coprime(mpz_t dst, mpz_t n, gmp_randstate_t prng);
+
+/**
+ * @brief Computes the left multiplicative share (`dst ^ (2 ^ (T + 1 - j))`).
+ *
+ * @param[out] dst The result of the exponentiation.
+ * @param[in] T The total number of iterations.
+ * @param[in] j The current iteration index.
+ * @param[in] N The modulus used for exponentiation.
+ */
+void mpz_pow_multiplicative_share(mpz_t dst, uint32_t T, uint32_t j, mpz_t N);
+
+/**
+ * @brief Computes the right multiplicative share of (`base * prod(key_i^c)`).
+ *
+ * @param[out] dst The result of the multiplicative share computation.
+ * @param[in] base The base value to start with.
+ * @param[in] c The array of digests calculated from message to sign.
+ * @param[in] key The array of key values.
+ * @param[in] l The length of the coefficient and key arrays.
+ * @param[in] N The modulus used for the computation.
+ */
+void mpz_multiplicative_share(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N);
+
+/**
+ * @brief Computes a hash digest from the given inputs.
+ *
+ * @param[in] m The input message string.
+ * @param[in] j The round number in the protocol.
+ * @param[in] Y The value calculated from players share.
+ * @return Pointer to the computed hash digest.
+ */
+uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y);
+
+/**
+ * @brief Computes the modular product of an array of values.
+ *
+ * @param[out] dst The result of the modular product.
+ * @param[in] array The array of values to multiply.
+ * @param[in] size The size of the array.
+ * @param[in] N The modulus used for the computation.
+ */
+void mpz_mmul_array(mpz_t dst, mpz_t *array, uint32_t size, mpz_t N);
+
+void mpz_madd_array(mpz_t dst, mpz_t *array, uint32_t size, mpz_t N);
+
+void shamir_ss(mpz_point_t *out, uint32_t size, mpz_t secret, uint32_t k, gmp_randstate_t prng, mpz_t modulo);
+
+void mult_shamir_ss(mpz_point_t *dst, mpz_point_t *shares_a, mpz_point_t *shares_b, uint32_t size, uint32_t treshold, gmp_randstate_t prng, mpz_t modulo);
+
+void joint_shamir_ss(mpz_point_t *dst, mpz_t *secrets, uint32_t treshold, uint32_t size, gmp_randstate_t prng, mpz_t modulo);
+
+void lagrange_interpolation(mpz_t result, mpz_point_t *shares, mpz_t point, uint32_t size, mpz_t modulo);
+
+void mpz_clear_point(mpz_point_t point);
+
+#endif
