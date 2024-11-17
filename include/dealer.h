@@ -9,23 +9,7 @@
  * as the product of these two primes.
  *
  */
-static inline __attribute__((always_inline)) void dealer_set_modulo()
-{
-    mpz_t p, q;
-
-    mpz_inits(p, q, PK.N, NULL);
-
-    mpz_set_lbit_prime(p, protocol_parameters.prng, protocol_parameters.k / 2);
-
-    do
-    {
-        mpz_set_lbit_prime(q, protocol_parameters.prng, protocol_parameters.k / 2);
-    } while (mpz_cmp(p, q) == 0);
-
-    mpz_mul(PK.N, p, q);
-
-    mpz_clears(p, q, NULL);
-}
+void dealer_set_modulo();
 
 /**
  * @brief Initializes the players array with secret keys and parameters.
@@ -35,21 +19,9 @@ static inline __attribute__((always_inline)) void dealer_set_modulo()
  * and an array of secret values (S) of lenght l.
  *
  */
-static inline __attribute__((always_inline)) void dealer_init_players()
-{
-    players = (player_t *)malloc(protocol_parameters.n * sizeof(player_t));
+void dealer_init_players();
 
-    for (uint32_t i = 0; i < protocol_parameters.n; i++)
-    {
-        players[i].id = i;
-
-        mpz_init_set(players[i].sk.N, PK.N);
-
-        players[i].sk.j = 0;
-        players[i].sk.T = protocol_parameters.T;
-        players[i].sk.S = (mpz_t *)malloc(protocol_parameters.l * sizeof(mpz_t));
-    }
-}
+void dealer_init_pk();
 
 /**
  * @brief Sets a random value in player's secret key that is coprime with the public modulo.
@@ -76,12 +48,6 @@ static inline __attribute__((always_inline)) void dealer_set_player_private_key_
  */
 static inline __attribute__((always_inline)) void dealer_multiplicative_compute_public_key_i(uint32_t key_idx)
 {
-    if (key_idx == 0)
-    {
-        PK.T = protocol_parameters.T;
-        PK.U = (mpz_t *)malloc(protocol_parameters.l * sizeof(mpz_t));
-    }
-
     mpz_init(PK.U[key_idx]);
 
     mpz_set(PK.U[key_idx], players[0].sk.S[key_idx]);
@@ -92,26 +58,19 @@ static inline __attribute__((always_inline)) void dealer_multiplicative_compute_
         mpz_mod(PK.U[key_idx], PK.U[key_idx], PK.N);
     }
 
-    mpz_pow_multiplicative_share(PK.U[key_idx], PK.T, 0, PK.N);
+    mpz_double_pow(PK.U[key_idx], PK.T, 0, PK.N);
 }
 
-static inline __attribute__((always_inline)) void dealer_polynomial_set_secret_compute_public_key_i(mpz_t *s, uint32_t key_idx)
+static inline __attribute__((always_inline)) void dealer_polynomial_set_secret_compute_public_key_i(mpz_t s, uint32_t key_idx)
 {
-    if (key_idx == 0)
-    {
-        PK.T = protocol_parameters.T;
-        PK.U = (mpz_t *)malloc(protocol_parameters.l * sizeof(mpz_t));
-    }
+    mpz_set_random_n_coprime(s, PK.N, protocol_parameters.prng);
 
-    mpz_init(*s);
-    mpz_set_random_n_coprime(*s, PK.N, protocol_parameters.prng);
+    mpz_init_set(PK.U[key_idx], s);
 
-    mpz_init_set(PK.U[key_idx], *s);
-
-    mpz_pow_multiplicative_share(PK.U[key_idx], PK.T, 0, PK.N);
+    mpz_double_pow(PK.U[key_idx], PK.T, 0, PK.N);
 }
 
-static inline __attribute__((always_inline)) void dealer_uses_shamir_ss(mpz_point_t *out, mpz_t s, uint32_t threshold)
+static inline __attribute__((always_inline)) void dealer_uses_shamir_ss(mpz_point_t *out, mpz_t s)
 {
-    shamir_ss(out, protocol_parameters.n, s, threshold, protocol_parameters.prng, PK.N);
+    shamir_ss(out, protocol_parameters.n, s, protocol_parameters.threshold, protocol_parameters.prng, PK.N);
 }

@@ -3,6 +3,7 @@
 signature_t *signature_malloc(mpz_t y, mpz_t z, uint8_t j)
 {
     signature_t *sigma = (signature_t *)malloc(sizeof(signature_t));
+    check_null_pointer(sigma);
 
     mpz_init_set(sigma->y, y);
     mpz_init_set(sigma->z, z);
@@ -34,9 +35,9 @@ uint8_t verify(char *m, signature_t *s)
         mpz_inits(left, right, NULL);
 
         mpz_set(left, s->z);
-        mpz_pow_multiplicative_share(left, PK.T, s->j, PK.N);
+        mpz_double_pow(left, PK.T, s->j, PK.N);
 
-        mpz_multiplicative_share(right, s->y, c, PK.U, protocol_parameters.l, PK.N);
+        mpz_mmul_pow_array(right, s->y, c, PK.U, protocol_parameters.l, PK.N);
 
         if (mpz_congruent_p(left, right, PK.N) != 0)
             res = 1;

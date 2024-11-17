@@ -28,6 +28,8 @@ typedef struct
     mpz_t y;
 } mpz_point_t;
 
+void check_null_pointer(void *ptr);
+
 /**
  * @brief Sets a random prime number to `dst` with `l` bits, congruent to 3 mod 4.
  *
@@ -47,14 +49,14 @@ void mpz_set_lbit_prime(mpz_t dst, gmp_randstate_t prng, __uint32_t l);
 void mpz_set_random_n_coprime(mpz_t dst, mpz_t n, gmp_randstate_t prng);
 
 /**
- * @brief Computes the left multiplicative share (`dst ^ (2 ^ (T + 1 - j))`).
+ * @brief Computes (`dst ^ (2 ^ (T + 1 - j))`).
  *
  * @param[out] dst The result of the exponentiation.
  * @param[in] T The total number of iterations.
  * @param[in] j The current iteration index.
  * @param[in] N The modulus used for exponentiation.
  */
-void mpz_pow_multiplicative_share(mpz_t dst, uint32_t T, uint32_t j, mpz_t N);
+void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N);
 
 /**
  * @brief Computes the right multiplicative share of (`base * prod(key_i^c)`).
@@ -66,7 +68,7 @@ void mpz_pow_multiplicative_share(mpz_t dst, uint32_t T, uint32_t j, mpz_t N);
  * @param[in] l The length of the coefficient and key arrays.
  * @param[in] N The modulus used for the computation.
  */
-void mpz_multiplicative_share(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N);
+void mpz_mmul_pow_array(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N);
 
 /**
  * @brief Computes a hash digest from the given inputs.

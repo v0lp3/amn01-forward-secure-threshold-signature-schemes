@@ -1,5 +1,14 @@
 #include "../include/utils.h"
 
+void check_null_pointer(void *ptr)
+{
+    if (ptr == NULL)
+    {
+        fputs("Error while allocating memory.", stderr);
+        exit(-1);
+    }
+}
+
 void mpz_set_lbit_prime(mpz_t dst, gmp_randstate_t prng, __uint32_t l)
 {
     mpz_t remain, modulo;
@@ -40,7 +49,7 @@ void mpz_set_random_n_coprime(mpz_t dst, mpz_t n, gmp_randstate_t prng)
     mpz_clear(gcd);
 }
 
-void mpz_pow_multiplicative_share(mpz_t dst, uint32_t T, uint32_t j, mpz_t N)
+void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N)
 {
     mpz_t exponent;
 
@@ -78,6 +87,8 @@ uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y)
     int message_len = strlen(round_str) + strlen(y_str) + strlen(m) + 1;
 
     char *message = malloc(message_len);
+    check_null_pointer(message);
+
     if (!message)
     {
         free(digests);
@@ -96,9 +107,10 @@ uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y)
     return digests;
 }
 
-void mpz_multiplicative_share(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N)
+void mpz_mmul_pow_array(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N)
 {
     mpz_t *tmp = (mpz_t *)malloc(l * sizeof(mpz_t));
+    check_null_pointer(tmp);
 
     mpz_set(dst, base);
 
@@ -137,6 +149,7 @@ void mpz_madd_array(mpz_t dst, mpz_t *array, uint32_t size, mpz_t N)
 void shamir_ss(mpz_point_t *out, uint32_t size, mpz_t secret, uint32_t k, gmp_randstate_t prng, mpz_t modulo)
 {
     mpz_t *polynomial = polynomial = (mpz_t *)malloc(k * sizeof(mpz_t));
+    check_null_pointer(polynomial);
 
     mpz_init_set(polynomial[0], secret);
 
@@ -226,10 +239,13 @@ void mpz_clear_point(mpz_point_t point)
 void joint_shamir_ss(mpz_point_t *dst, mpz_t *secrets, uint32_t treshold, uint32_t size, gmp_randstate_t prng, mpz_t modulo)
 {
     mpz_point_t **shares = (mpz_point_t **)malloc(size * sizeof(mpz_point_t *));
+    check_null_pointer(shares);
 
     for (uint32_t j = 0; j < size; j++)
     {
         shares[j] = (mpz_point_t *)malloc(size * sizeof(mpz_point_t));
+        check_null_pointer(shares[j]);
+
         shamir_ss(shares[j], size, secrets[j], treshold, prng, modulo);
     }
 
@@ -266,6 +282,7 @@ void mult_shamir_ss(mpz_point_t *dst, mpz_point_t *shares_a, mpz_point_t *shares
     mpz_init_set_ui(point, 0);
 
     mpz_point_t **shares = (mpz_point_t **)malloc(size * sizeof(mpz_point_t *));
+    check_null_pointer(shares);
 
     for (uint32_t i = 0; i < size; i++)
     {
@@ -273,10 +290,13 @@ void mult_shamir_ss(mpz_point_t *dst, mpz_point_t *shares_a, mpz_point_t *shares
         mpz_mod(dst[i].y, dst[i].y, modulo);
 
         shares[i] = (mpz_point_t *)malloc(size * sizeof(mpz_point_t));
+        check_null_pointer(shares[i]);
+
         shamir_ss(shares[i], size, dst[i].y, treshold, prng, modulo);
     }
 
     mpz_point_t *tmp = (mpz_point_t *)malloc(size * sizeof(mpz_point_t));
+    check_null_pointer(tmp);
 
     for (uint32_t i = 0; i < size; i++)
     {
