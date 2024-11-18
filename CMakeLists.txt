@@ -17,8 +17,8 @@ else()
     message("[*] Using multiplicative scheme")
 endif()
 
-file(GLOB MDR_LIBRARY_HEADERS lib/mdr/*.h)
-file(GLOB MDR_LIBRARY_SOURCES lib/mdr/*.c)
+file(GLOB MDR_LIBRARY_HEADERS lib/*.h)
+file(GLOB MDR_LIBRARY_SOURCES lib/*.c)
 add_library(lib-mdr ${MDR_LIBRARY_SOURCES} ${MDR_LIBRARY_HEADERS})
 
 file(GLOB AMN01_LIBRARY_HEADERS include/*.h)

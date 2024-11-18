@@ -8,8 +8,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../lib/mdr/lib-mesg.h"
-#include "../lib/mdr/lib-misc.h"
+#include "../lib/lib-mesg.h"
+#include "../lib/lib-misc.h"
 
 #include <nettle/sha3.h>
 
