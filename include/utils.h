@@ -28,6 +28,11 @@ typedef struct
     mpz_t y;
 } mpz_point_t;
 
+/**
+ * @brief Checks if a pointer is NULL and terminate execution if it is.
+ *
+ * @param[in] ptr The pointer to check for NULL.
+ */
 void check_null_pointer(void *ptr);
 
 /**
@@ -90,16 +95,70 @@ uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y);
  */
 void mpz_mmul_array(mpz_t dst, mpz_t *array, uint32_t size, mpz_t N);
 
+/**
+ * @brief Computes the modular sum of an array of values.
+ *
+ * @param[out] dst The result of the modular sum.
+ * @param[in] array The array of values to sum.
+ * @param[in] size The size of the array.
+ * @param[in] N The modulus used for the computation.
+ */
 void mpz_madd_array(mpz_t dst, mpz_t *array, uint32_t size, mpz_t N);
 
+/**
+ * @brief Performs Shamir's secret sharing and generates shares of the secret.
+ *
+ * @param[out] out The output array of points that holds the shares.
+ * @param[in] size The number of shares to generate.
+ * @param[in] secret The secret value to share.
+ * @param[in] k The threshold for reconstruction (degree of polynomial).
+ * @param[in] prng The random state used for generating the polynomial.
+ * @param[in] modulo The modulus used in computations.
+ */
 void shamir_ss(mpz_point_t *out, uint32_t size, mpz_t secret, uint32_t k, gmp_randstate_t prng, mpz_t modulo);
 
+/**
+ * @brief Multiplies two sets of Shamir secret shares and generates the resulting shares.
+ *
+ * @param[out] dst The output array of points that holds the result.
+ * @param[in] shares_a The first set of shares.
+ * @param[in] shares_b The second set of shares.
+ * @param[in] size The number of shares in each set.
+ * @param[in] treshold The threshold for reconstruction.
+ * @param[in] prng The random state used in the computation.
+ * @param[in] modulo The modulus used for computation.
+ */
 void mult_shamir_ss(mpz_point_t *dst, mpz_point_t *shares_a, mpz_point_t *shares_b, uint32_t size, uint32_t treshold, gmp_randstate_t prng, mpz_t modulo);
 
+/**
+ * @brief Additionate two sets of Shamir secret shares and generates the resulting shares.
+ *
+ * @param[out] dst The output array of points that holds the result.
+ * @param[in] shares_a The first set of shares.
+ * @param[in] shares_b The second set of shares.
+ * @param[in] size The number of shares in each set.
+ * @param[in] treshold The threshold for reconstruction.
+ * @param[in] prng The random state used in the computation.
+ * @param[in] modulo The modulus used for computation.
+ */
 void joint_shamir_ss(mpz_point_t *dst, mpz_t *secrets, uint32_t treshold, uint32_t size, gmp_randstate_t prng, mpz_t modulo);
 
+/**
+ * @brief Performs Lagrange interpolation on the provided shares to reconstruct a value.
+ *
+ * @param[out] result The reconstructed value.
+ * @param[in] shares The shares of the secret.
+ * @param[in] point The point at which to interpolate the value.
+ * @param[in] size The number of shares.
+ * @param[in] modulo The modulus used in the computation.
+ */
 void lagrange_interpolation(mpz_t result, mpz_point_t *shares, mpz_t point, uint32_t size, mpz_t modulo);
 
+/**
+ * @brief Utility to clear structure of type mpz_point_t.
+ *
+ * @param[in] point The point to clear.
+ */
 void mpz_clear_point(mpz_point_t point);
 
 #endif

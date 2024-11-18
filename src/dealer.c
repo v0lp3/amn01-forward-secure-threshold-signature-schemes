@@ -18,7 +18,6 @@ void dealer_set_modulo()
     mpz_clears(p, q, NULL);
 }
 
-
 void dealer_init_players()
 {
     players = (player_t *)malloc(protocol_parameters.n * sizeof(player_t));

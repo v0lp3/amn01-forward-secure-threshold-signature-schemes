@@ -2,7 +2,7 @@
 #include "context.h"
 
 /**
- * @brief Sets a random value for a player's parameter r.
+ * @brief Sets a random value for a player's parameter r in the multiplicative scheme.
  *
  * Initializes and sets a random value for the player's parameter `r` that is coprime with the
  * public modulo `PK.N`.
@@ -16,7 +16,7 @@ static inline __attribute__((always_inline)) void player_multiplicative_compute_
 }
 
 /**
- * @brief Computes the value y based on the player's parameter r and the round number j.
+ * @brief Computes the value y based on the player's parameter r and the round number j in the multiplicative scheme.
  *
  * @param[out] y The computed value y.
  * @param[in] r The player's parameter r.
@@ -29,15 +29,14 @@ static inline __attribute__((always_inline)) void player_multiplicative_compute_
 }
 
 /**
- * @brief Computes the value z based on the player's parameters r, the array S, and the digests c.
+ * @brief Computes the value z based on the player's parameters r, the array S, and the digests c in the multiplicative scheme.
  *
  * @param[out] z The computed value z.
  * @param[in] r The player's parameter r.
  * @param[in] S The player's secret parameter array S.
  * @param[in] c The digests array.
- * @param[in] j The current round number.
  */
-static inline __attribute__((always_inline)) void player_multiplicative_compute_z(mpz_t *z, mpz_t *r, mpz_t *S, uint8_t *c, uint32_t j)
+static inline __attribute__((always_inline)) void player_multiplicative_compute_z(mpz_t *z, mpz_t *r, mpz_t *S, uint8_t *c)
 {
     mpz_init(*z);
     mpz_mmul_pow_array(*z, *r, c, S, protocol_parameters.l, PK.N);
@@ -51,28 +50,33 @@ static inline __attribute__((always_inline)) void player_multiplicative_compute_
  * @param[out] out The array of output values.
  * @param[in] n The number of random values to generate.
  */
-static inline __attribute__((always_inline)) void player_get_randoms_congruent_one(mpz_t *out, uint32_t n)
+static inline __attribute__((always_inline)) mpz_t *player_get_random_product_congruent_one()
 {
+    mpz_t *out = (mpz_t *)malloc(protocol_parameters.n * sizeof(mpz_t));
+    check_null_pointer(out);
+
     mpz_t tmp;
     mpz_inits(tmp, NULL);
 
     mpz_set_ui(tmp, 1);
 
-    for (int i = 0; i < n - 1; i++)
+    for (int i = 0; i < protocol_parameters.n - 1; i++)
     {
         mpz_init(out[i]);
-        mpz_urandomb(out[i], protocol_parameters.prng, protocol_parameters.k);
+        mpz_urandomm(out[i], protocol_parameters.prng, PK.N);
         mpz_mul(tmp, tmp, out[i]);
         mpz_mod(tmp, tmp, PK.N);
     }
 
-    mpz_init(out[n - 1]);
+    mpz_init(out[protocol_parameters.n - 1]);
 
-    uint32_t res = mpz_invert(out[n - 1], tmp, PK.N);
+    uint32_t res = mpz_invert(out[protocol_parameters.n - 1], tmp, PK.N);
 
     assert(res != 0);
 
     mpz_clears(tmp, NULL);
+
+    return out;
 }
 
 /**
@@ -83,8 +87,16 @@ static inline __attribute__((always_inline)) void player_get_randoms_congruent_o
  * @param[in, out] S The player's current secret parameters.
  * @param[in] shares The shares from other players.
  */
-static inline __attribute__((always_inline)) void player_compute_new_secret_share(mpz_t *S, mpz_t *shares)
+static inline __attribute__((always_inline)) void player_multiplicative_compute_new_secret_share(mpz_t **players_random_shares, uint32_t player_idx)
 {
+    mpz_t *shares = (mpz_t *)malloc(protocol_parameters.n * sizeof(mpz_t));
+    check_null_pointer(shares);
+
+    for (uint32_t i = 0; i < protocol_parameters.n; i++)
+    {
+        mpz_init_set(shares[i], players_random_shares[i][player_idx]);
+    }
+
     mpz_t factor;
     mpz_init(factor);
 
@@ -92,9 +104,16 @@ static inline __attribute__((always_inline)) void player_compute_new_secret_shar
 
     for (uint32_t i = 0; i < protocol_parameters.l; i++)
     {
-        mpz_mul(S[i], S[i], factor);
-        mpz_mod(S[i], S[i], PK.N);
+        mpz_mul(players[player_idx].sk.S[i], players[player_idx].sk.S[i], factor);
+        mpz_mod(players[player_idx].sk.S[i], players[player_idx].sk.S[i], PK.N);
     }
+    for (uint32_t i = 0; i < protocol_parameters.n; i++)
+    {
+        mpz_clear(shares[i]);
+    }
+
+    free(shares);
+    mpz_clear(factor);
 }
 
 static inline __attribute__((always_inline)) mpz_point_t *players_polynomial_compute_r_shares()
@@ -158,7 +177,16 @@ static inline __attribute__((always_inline)) void players_polynomial_compute_y(m
     free(y_shares);
 }
 
-static inline mpz_point_t *player_polynomial_get_key_i_shares(uint32_t key_idx)
+/**
+ * @brief Utility function to get an array containing the shares of the piece `key_idx` of the key.
+ *
+ * In the protocol the players doesn't exchange their own shares of the key! This is only an utility function to encapsulate and reuse the code.
+ *
+ * @param[out] z The computed value z.
+ * @param[in] r The shares of r.
+ * @param[in] c The digests array.
+ */
+static inline mpz_point_t *player_polynomial_get_key_shares_i(uint32_t key_idx)
 {
     mpz_point_t *key_shares = malloc(sizeof(mpz_point_t) * protocol_parameters.n);
     check_null_pointer(key_shares);
@@ -172,6 +200,13 @@ static inline mpz_point_t *player_polynomial_get_key_i_shares(uint32_t key_idx)
     return key_shares;
 }
 
+/**
+ * @brief Computes the value z in the polynomial scheme.
+ *
+ * @param[out] z The computed value z.
+ * @param[in] r The shares of r.
+ * @param[in] c The digests array.
+ */
 static inline __attribute__((always_inline)) void players_polynomial_compute_z(mpz_t *z, uint8_t *c, mpz_point_t *r_shares)
 {
     mpz_init(*z);
@@ -195,8 +230,8 @@ static inline __attribute__((always_inline)) void players_polynomial_compute_z(m
             continue;
         }
 
-        mpz_point_t *key_shares = player_polynomial_get_key_i_shares(i);
-        mpz_point_t *result = player_polynomial_get_key_i_shares(i);
+        mpz_point_t *key_shares = player_polynomial_get_key_shares_i(i);
+        mpz_point_t *result = player_polynomial_get_key_shares_i(i);
 
         for (uint32_t k = 1; k < c[i]; k++)
         {

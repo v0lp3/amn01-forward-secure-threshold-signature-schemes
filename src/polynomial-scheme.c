@@ -12,8 +12,9 @@ void keygen()
     {
         mpz_t s;
         mpz_init(s);
+        mpz_set_random_n_coprime(s, PK.N, protocol_parameters.prng);
 
-        dealer_polynomial_set_secret_compute_public_key_i(s, i);
+        dealer_polynomial_compute_public_key_i(s, i);
 
         mpz_point_t *shares = (mpz_point_t *)malloc(protocol_parameters.n * sizeof(mpz_point_t));
         check_null_pointer(shares);
@@ -68,7 +69,7 @@ uint8_t update(uint32_t j)
     for (uint32_t i = 0; i < protocol_parameters.l; i++)
     {
 
-        mpz_point_t *tmp = player_polynomial_get_key_i_shares(i);
+        mpz_point_t *tmp = player_polynomial_get_key_shares_i(i);
 
         mult_shamir_ss(tmp, tmp, tmp, protocol_parameters.n, protocol_parameters.threshold, protocol_parameters.prng, PK.N);
 

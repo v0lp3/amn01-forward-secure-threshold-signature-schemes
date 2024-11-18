@@ -45,7 +45,7 @@ signature_t *sign(char *m, uint32_t j)
 
     for (uint32_t i = 0; i < protocol_parameters.n; i++)
     {
-        player_multiplicative_compute_z(&z_players[i], &r_players[i], players[i].sk.S, c, j);
+        player_multiplicative_compute_z(&z_players[i], &r_players[i], players[i].sk.S, c);
     }
 
     mpz_mmul_array(z, z_players, protocol_parameters.n, PK.N);
@@ -91,30 +91,12 @@ void refresh()
 
     for (uint32_t i = 0; i < protocol_parameters.n; i++)
     {
-        players_random_shares[i] = (mpz_t *)malloc(protocol_parameters.n * sizeof(mpz_t));
-        check_null_pointer(players_random_shares[i]);
-
-        player_get_randoms_congruent_one(players_random_shares[i], protocol_parameters.n);
+        players_random_shares[i] = player_get_random_product_congruent_one(players_random_shares[i], protocol_parameters.n);
     }
 
     for (uint32_t j = 0; j < protocol_parameters.n; j++)
     {
-        mpz_t *player_j_shares = (mpz_t *)malloc(protocol_parameters.n * sizeof(mpz_t));
-        check_null_pointer(player_j_shares);
-
-        for (uint32_t i = 0; i < protocol_parameters.n; i++)
-        {
-            mpz_init_set(player_j_shares[i], players_random_shares[i][j]);
-        }
-
-        player_compute_new_secret_share(players[j].sk.S, player_j_shares);
-
-        for (uint32_t i = 0; i < protocol_parameters.n; i++)
-        {
-            mpz_clear(player_j_shares[i]);
-        }
-
-        free(player_j_shares);
+        player_multiplicative_compute_new_secret_share(players_random_shares, j);
     }
 
     for (uint32_t i = 0; i < protocol_parameters.n; i++)

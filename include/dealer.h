@@ -21,6 +21,10 @@ void dealer_set_modulo();
  */
 void dealer_init_players();
 
+/**
+ * @brief Initialize public parameters in the protocol.
+ *
+ */
 void dealer_init_pk();
 
 /**
@@ -38,10 +42,6 @@ static inline __attribute__((always_inline)) void dealer_set_player_private_key_
 
 /**
  * @brief Computes the public key component for a specific index.
- *
- * Initializes and computes the product of all players' secret keys at the given index and
- * stores the result in the public key array `PK.U`. The result is then exponentiated by a
- * power of 2 to complete the computation.
  *
  * @param key_idx The index of the public key value to be computed.
  *
@@ -61,15 +61,21 @@ static inline __attribute__((always_inline)) void dealer_multiplicative_compute_
     mpz_double_pow(PK.U[key_idx], PK.T, 0, PK.N);
 }
 
-static inline __attribute__((always_inline)) void dealer_polynomial_set_secret_compute_public_key_i(mpz_t s, uint32_t key_idx)
+/**
+ * @brief This function is used in the polynomial protocol to compute the value of the public key.
+ *
+ */
+static inline __attribute__((always_inline)) void dealer_polynomial_compute_public_key_i(mpz_t s, uint32_t key_idx)
 {
-    mpz_set_random_n_coprime(s, PK.N, protocol_parameters.prng);
-
     mpz_init_set(PK.U[key_idx], s);
 
     mpz_double_pow(PK.U[key_idx], PK.T, 0, PK.N);
 }
 
+/**
+ * @brief Dealer uses shamir secret sharing in the keygen to generate shares of the key.
+ *
+ */
 static inline __attribute__((always_inline)) void dealer_uses_shamir_ss(mpz_point_t *out, mpz_t s)
 {
     shamir_ss(out, protocol_parameters.n, s, protocol_parameters.threshold, protocol_parameters.prng, PK.N);
