@@ -8,6 +8,15 @@ set(EXECUTABLE_NAME ${PROJECT_NAME})
 
 add_compile_options(-Wall)
 
+option(USE_POLYNOMIAL "Use Polynomial implementation" OFF)
+
+if (USE_POLYNOMIAL)
+    message("[*] Using polynomial scheme")
+    add_compile_definitions(-DUSE_POLYNOMIAL)
+else()
+    message("[*] Using multiplicative scheme")
+endif()
+
 file(GLOB MDR_LIBRARY_HEADERS lib/mdr/*.h)
 file(GLOB MDR_LIBRARY_SOURCES lib/mdr/*.c)
 add_library(lib-mdr ${MDR_LIBRARY_SOURCES} ${MDR_LIBRARY_HEADERS})

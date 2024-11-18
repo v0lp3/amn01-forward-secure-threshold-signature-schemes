@@ -9,7 +9,7 @@
  * as the product of these two primes.
  *
  */
-void dealer_set_modulo();
+void dealer_init_modulo();
 
 /**
  * @brief Initializes the players array with secret keys and parameters.
@@ -26,6 +26,7 @@ void dealer_init_players();
  *
  */
 void dealer_init_pk();
+
 
 /**
  * @brief Sets a random value in player's secret key that is coprime with the public modulo.

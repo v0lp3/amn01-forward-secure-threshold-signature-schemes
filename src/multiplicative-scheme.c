@@ -1,8 +1,10 @@
 #include "../include/scheme.h"
 
+#ifndef USE_POLYNOMIAL
+
 void keygen()
 {
-    dealer_set_modulo();
+    dealer_init_modulo();
 
     dealer_init_players();
 
@@ -19,7 +21,7 @@ void keygen()
     }
 }
 
-signature_t *sign(char *m, uint32_t j)
+signature_t *sign(const char *m, const uint32_t j)
 {
     mpz_t *r_players = (mpz_t *)malloc(protocol_parameters.n * sizeof(mpz_t));
     check_null_pointer(r_players);
@@ -111,3 +113,5 @@ void refresh()
 
     free(players_random_shares);
 }
+
+#endif

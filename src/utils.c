@@ -61,7 +61,7 @@ void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N)
     mpz_clear(exponent);
 }
 
-uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y)
+uint8_t *compute_hash_digest(const char *m, const uint8_t j, const mpz_t Y)
 {
     struct hash_context ctx;
 
@@ -107,7 +107,7 @@ uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y)
     return digests;
 }
 
-void mpz_mmul_pow_array(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N)
+void mpz_mmul_pow_array(mpz_t dst, const mpz_t base, const uint8_t *c, const mpz_t *key, const uint32_t l, const mpz_t N)
 {
     mpz_t *tmp = (mpz_t *)malloc(l * sizeof(mpz_t));
     check_null_pointer(tmp);

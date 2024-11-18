@@ -73,7 +73,7 @@ void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N);
  * @param[in] l The length of the coefficient and key arrays.
  * @param[in] N The modulus used for the computation.
  */
-void mpz_mmul_pow_array(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t l, mpz_t N);
+void mpz_mmul_pow_array(mpz_t dst, const mpz_t base, const uint8_t *c, const mpz_t *key, const uint32_t l, const mpz_t N);
 
 /**
  * @brief Computes a hash digest from the given inputs.
@@ -83,7 +83,7 @@ void mpz_mmul_pow_array(mpz_t dst, mpz_t base, uint8_t *c, mpz_t *key, uint32_t 
  * @param[in] Y The value calculated from players share.
  * @return Pointer to the computed hash digest.
  */
-uint8_t *compute_hash_digest(const char *m, uint8_t j, mpz_t Y);
+uint8_t *compute_hash_digest(const char *m, const uint8_t j, const mpz_t Y);
 
 /**
  * @brief Computes the modular product of an array of values.

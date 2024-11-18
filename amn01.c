@@ -1,5 +1,5 @@
-#include "src/polynomial-scheme.c"
-// #include "src/multiplicative-scheme.c"
+#include "include/tests.h"
+
 context_t protocol_parameters;
 public_key_t PK;
 player_t *players;
@@ -19,17 +19,14 @@ int main()
     gmp_randinit_default(protocol_parameters.prng);
     gmp_randseed_os_rng(protocol_parameters.prng, 128);
 
-    keygen();
+    test_simple_sign_verify();
+    test_round_update_sign_verify();
+    test_forge_sign_verify();
 
-    update(1);
-
-    char *m = "amn01 signature test";
-    signature_t *signature = sign(m, 1);
-
-    pmesg_mpz(msg_verbose, "y", signature->y);
-    pmesg_mpz(msg_verbose, "z", signature->z);
-
-    printf("%d\n", verify(m, signature));
-
-    signature_free(signature);
+    #ifndef USE_POLYNOMIAL
+    test_refresh_sign_verify();
+    #endif
+    
+    
+    gmp_randclear(protocol_parameters.prng);
 }

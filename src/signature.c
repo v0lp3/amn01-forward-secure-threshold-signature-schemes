@@ -20,7 +20,7 @@ void signature_free(signature_t *s)
     free(s);
 }
 
-uint8_t verify(char *m, signature_t *s)
+uint8_t verify(const char *m, const signature_t *s)
 {
     mpz_t tmp;
     mpz_init_set_ui(tmp, 0);

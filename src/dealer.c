@@ -1,6 +1,6 @@
 #include "../include/dealer.h"
 
-void dealer_set_modulo()
+void dealer_init_modulo()
 {
     mpz_t p, q;
 

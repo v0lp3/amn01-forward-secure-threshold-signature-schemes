@@ -15,7 +15,7 @@ void keygen();
  * @param[in] j The round number for signing.
  * @return Pointer to the generated signature
  */
-signature_t *sign(char *m, uint32_t j);
+signature_t *sign(const char *m, uint32_t j);
 
 /**
  * @brief Simulatet the protocol for players' keys update for the given round.
@@ -25,7 +25,13 @@ signature_t *sign(char *m, uint32_t j);
  */
 uint8_t update(uint32_t j);
 
+#ifndef USE_POLYNOMIAL
+
 /**
  * @brief Simulate the protocol for refreshes of the secret shares of all players.
  */
 void refresh();
+
+#endif
+
+void cleanup();

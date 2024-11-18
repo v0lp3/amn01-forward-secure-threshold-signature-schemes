@@ -1,8 +1,10 @@
 #include "../include/scheme.h"
 
+#ifdef USE_POLYNOMIAL
+
 void keygen()
 {
-    dealer_set_modulo();
+    dealer_init_modulo();
 
     dealer_init_players();
 
@@ -32,7 +34,7 @@ void keygen()
     }
 }
 
-signature_t *sign(char *m, uint32_t j)
+signature_t *sign(const char *m, const uint32_t j)
 {
     mpz_t y, z;
 
@@ -84,3 +86,5 @@ uint8_t update(uint32_t j)
 
     return 1;
 }
+
+#endif
