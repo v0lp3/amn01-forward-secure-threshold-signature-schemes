@@ -83,7 +83,7 @@ void mpz_mmul_pow_array(mpz_t dst, const mpz_t base, const uint8_t *c, const mpz
  * @param[in] Y The value calculated from players share.
  * @return Pointer to the computed hash digest.
  */
-uint8_t *compute_hash_digest(const char *m, const uint8_t j, const mpz_t Y);
+uint8_t *compute_hash_digest(const char *m, const uint8_t j, const mpz_t Y, uint32_t hash_len);
 
 /**
  * @brief Computes the modular product of an array of values.

@@ -29,7 +29,7 @@ uint8_t verify(context_t *ctx, public_key_t *pk, const char *m, const signature_
 
     if (mpz_congruent_p(s->y, tmp, pk->N) == 0) // check if y is congruent to 0 mod n, returns non zero if congruent
     {
-        uint8_t *c = compute_hash_digest(m, s->j, s->y);
+        uint8_t *c = compute_hash_digest(m, s->j, s->y, ctx->l);
 
         mpz_t left, right;
         mpz_inits(left, right, NULL);

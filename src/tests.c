@@ -26,7 +26,7 @@ void test_simple_sign_verify()
     player_t *players;
 
     protocol_parameters.k = 1024;
-    protocol_parameters.l = 16;
+    protocol_parameters.l = 160;
     protocol_parameters.n = 5;
     protocol_parameters.threshold = 3;
     protocol_parameters.T = 10;
@@ -53,7 +53,7 @@ void test_round_update_sign_verify()
     player_t *players;
 
     protocol_parameters.k = 1024;
-    protocol_parameters.l = 16;
+    protocol_parameters.l = 160;
     protocol_parameters.n = 5;
     protocol_parameters.threshold = 3;
     protocol_parameters.T = 10;
@@ -88,7 +88,7 @@ void test_forge_sign_verify()
     player_t *players;
 
     protocol_parameters.k = 1024;
-    protocol_parameters.l = 16;
+    protocol_parameters.l = 160;
     protocol_parameters.n = 5;
     protocol_parameters.threshold = 3;
     protocol_parameters.T = 10;
@@ -120,7 +120,7 @@ void test_refresh_sign_verify()
     player_t *players;
 
     protocol_parameters.k = 1024;
-    protocol_parameters.l = 16;
+    protocol_parameters.l = 160;
     protocol_parameters.n = 5;
     protocol_parameters.threshold = 3;
     protocol_parameters.T = 10;
