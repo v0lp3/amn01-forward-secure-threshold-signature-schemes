@@ -45,8 +45,4 @@ typedef struct
 
 } signature_t;
 
-extern context_t protocol_parameters;
-extern public_key_t PK;
-extern player_t *players;
-
 #endif // PROTOCOL_H

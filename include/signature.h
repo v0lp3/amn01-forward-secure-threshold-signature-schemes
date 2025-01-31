@@ -26,4 +26,4 @@ void signature_free(signature_t *s);
  * @param[in] s The signature to verify.
  * @return 1 if the signature is valid, 0 otherwise.
  */
-uint8_t verify(const char *m, const signature_t *s);
+uint8_t verify(context_t *ctx, public_key_t *pk, const char *m, const signature_t *s);

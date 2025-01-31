@@ -1,21 +1,21 @@
 #include "../include/scheme.h"
 
-void cleanup()
+void cleanup(context_t *ctx, public_key_t *pk, player_t *players)
 {
-    mpz_clear(PK.N);
+    mpz_clear(pk->N);
 
-    for (uint32_t i = 0; i < protocol_parameters.l; i++)
+    for (uint32_t i = 0; i < ctx->l; i++)
     {
-        mpz_clear(PK.U[i]);
+        mpz_clear(pk->U[i]);
     }
 
-    free(PK.U);
+    free(pk->U);
 
-    for (uint32_t i = 0; i < protocol_parameters.n; i++)
+    for (uint32_t i = 0; i < ctx->n; i++)
     {
         mpz_clear(players[i].sk.N);
 
-        for (uint32_t j = 0; j < protocol_parameters.l; j++)
+        for (uint32_t j = 0; j < ctx->l; j++)
         {
             mpz_clear(players[i].sk.S[j]);
         }
