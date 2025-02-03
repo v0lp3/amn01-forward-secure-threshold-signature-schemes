@@ -42,7 +42,7 @@ signature_t *sign(context_t *ctx, public_key_t *pk, player_t *players, const cha
 
     players_polynomial_compute_y(ctx, pk, &y, r_shares, j);
 
-    uint8_t *c = compute_hash_digest(m, j, y, ctx->l);
+    uint8_t *c = player_compute_c(ctx, y, j, m);
 
     players_polynomial_compute_z(ctx, pk, players, &z, c, r_shares);
 

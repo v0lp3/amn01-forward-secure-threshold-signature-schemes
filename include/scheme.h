@@ -35,3 +35,12 @@ void refresh(context_t *ctx, public_key_t* pk, player_t* players);
 #endif
 
 void cleanup(context_t *ctx, public_key_t *pk, player_t *players);
+
+/**
+ * @brief Verifies a signature against a given message.
+ *
+ * @param[in] m The message to verify.
+ * @param[in] s The signature to verify.
+ * @return 1 if the signature is valid, 0 otherwise.
+ */
+uint8_t verify(context_t *ctx, public_key_t *pk, const char *m, const signature_t *s);

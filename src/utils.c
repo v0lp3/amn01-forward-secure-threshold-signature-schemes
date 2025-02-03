@@ -61,49 +61,29 @@ void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N)
     mpz_clear(exponent);
 }
 
-uint8_t *compute_hash_digest(const char *m, const uint8_t j, const mpz_t Y, const uint32_t hash_len)
-{
-    struct hash_context ctx;
 
-    uint8_t *digests = calloc(hash_len, sizeof(uint8_t));
-    if (!digests)
+uint8_t *compute_hash_digest(const char *m, uint32_t hash_len)
+{
+    if (!m || hash_len == 0)
     {
         return NULL;
+    }
+
+    struct hash_context ctx;
+    
+    uint8_t *digests = (uint8_t *)calloc(hash_len, sizeof(uint8_t));
+    
+    if (!digests)
+    {
+        return NULL; 
     }
 
     hash_function_init(&ctx);
-
-    char round_str[8];
-    snprintf(round_str, sizeof(round_str), "%hhu", j);
-
-    char *y_str = mpz_get_str(NULL, 10, Y);
-
-    if (!y_str)
-    {
-        free(digests);
-        return NULL;
-    }
-
-    int message_len = strlen(round_str) + strlen(y_str) + strlen(m) + 1;
-
-    char *message = malloc(message_len);
-    check_null_pointer(message);
-
-    if (!message)
-    {
-        free(digests);
-        free(y_str);
-        return NULL;
-    }
-
-    snprintf(message, message_len, "%s%s%s", round_str, y_str, m);
-
-    hash_function_update(&ctx, message_len - 1, (const uint8_t *)message);
+    
+    hash_function_update(&ctx, (uint32_t)strlen(m), (const uint8_t *)m);
+    
     hash_function_digest(&ctx, hash_len, digests);
-
-    free(y_str);
-    free(message);
-
+    
     return digests;
 }
 

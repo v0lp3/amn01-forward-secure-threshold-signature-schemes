@@ -234,11 +234,6 @@ static inline __attribute__((always_inline)) void players_polynomial_compute_z(c
         mpz_point_t *key_shares = player_polynomial_get_key_shares_i(ctx, players, i);
         mpz_point_t *result = player_polynomial_get_key_shares_i(ctx, players, i);
 
-        for (uint32_t k = 1; k < c[i]; k++)
-        {
-            mult_shamir_ss(result, result, key_shares, ctx->n, ctx->threshold, ctx->prng, pk->N);
-        }
-
         mult_shamir_ss(z_shares, z_shares, result, ctx->n, ctx->threshold, ctx->prng, pk->N);
 
         for (uint32_t j = 0; j < ctx->n; j++)
@@ -261,4 +256,41 @@ static inline __attribute__((always_inline)) void players_polynomial_compute_z(c
     }
 
     free(z_shares);
+}
+
+static inline __attribute__((always_inline)) uint8_t *player_compute_c(context_t *ctx, const mpz_t Y, const uint32_t j, const char *m)
+{
+    char round_str[8];
+
+    uint8_t *c = calloc(ctx->l, sizeof(uint8_t));
+
+    snprintf(round_str, sizeof(round_str), "%hhu", j);
+
+    char *y_str = mpz_get_str(NULL, 10, Y);
+
+    check_null_pointer(y_str);
+
+    size_t message_len = strlen(round_str) + strlen(y_str) + strlen(m) + 1;
+
+    char *message = calloc(message_len, sizeof(char));
+
+    check_null_pointer(message);
+
+    snprintf(message, message_len, "%s%s%s", round_str, y_str, m);
+
+    uint8_t *digests = compute_hash_digest(message, ctx->l / 8);
+
+    free(message);
+
+    for (int i = 0; i < ctx->l / 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            c[i * 8 + j] = (digests[i] >> (7 - j)) & 1;
+        }
+    }
+
+    free(digests);
+
+    return c;
 }

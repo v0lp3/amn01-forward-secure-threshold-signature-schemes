@@ -43,7 +43,7 @@ signature_t *sign(context_t *ctx, public_key_t *pk, player_t *players, const cha
 
     mpz_mmul_array(y, y_players, ctx->n, pk->N);
 
-    uint8_t *c = compute_hash_digest(m, j, y, ctx->l);
+    uint8_t *c = player_compute_c(ctx, y, j, m);
 
     for (uint32_t i = 0; i < ctx->n; i++)
     {
