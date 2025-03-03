@@ -22,6 +22,10 @@
 
 #define PRIME_ITERATIONS 12
 
+#define BENCH_SAMPLING_TIME 5 /* secondi */
+#define MAX_SAMPLES (BENCH_SAMPLING_TIME * 1000)
+
+
 typedef struct
 {
     mpz_t x;

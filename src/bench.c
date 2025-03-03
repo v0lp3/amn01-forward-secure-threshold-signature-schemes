@@ -32,12 +32,12 @@ void bench_sign()
             keygen(&protocol_parameters, &PK, players);
         });
 
-    printf_et("keygen:", time, tu_millis, "\n");
+    printf_et("keygen: ", time, tu_millis, "\n");
 
     signature_t *signature;
 
     perform_wc_time_sampling_period(
-        timing, 32, 32, tu_millis,
+        timing, BENCH_SAMPLING_TIME, MAX_SAMPLES, tu_millis,
         {
             signature = sign(&protocol_parameters, &PK, players, m, 0);
         },
@@ -48,7 +48,7 @@ void bench_sign()
     uint8_t res;
 
     perform_wc_time_sampling_period(
-        timing, 32, 32, tu_millis,
+        timing, BENCH_SAMPLING_TIME, MAX_SAMPLES, tu_millis,
         {
             res = verify(&protocol_parameters, &PK, m, signature);
         },
