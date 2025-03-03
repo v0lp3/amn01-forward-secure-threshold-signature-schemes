@@ -45,4 +45,4 @@ typedef struct
 
 } signature_t;
 
-#endif // PROTOCOL_H
+#endif // CONTEXT_H

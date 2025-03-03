@@ -1,3 +1,5 @@
+#ifndef SCHEME_H
+#define SCHEME_H
 
 #include "dealer.h"
 #include "player.h"
@@ -23,14 +25,14 @@ signature_t *sign(context_t *ctx, public_key_t *pk, player_t *players, const cha
  * @param[in] j The current round number.
  * @return 1 if update was successful, 0 if the final round has been reached.
  */
-uint8_t update(context_t *ctx, public_key_t* pk, player_t* players, uint32_t j);
+uint8_t update(context_t *ctx, public_key_t *pk, player_t *players, uint32_t j);
 
 #ifndef USE_POLYNOMIAL
 
 /**
  * @brief Simulate the protocol for refreshes of the secret shares of all players.
  */
-void refresh(context_t *ctx, public_key_t* pk, player_t* players);
+void refresh(context_t *ctx, public_key_t *pk, player_t *players);
 
 #endif
 
@@ -44,3 +46,5 @@ void cleanup(context_t *ctx, public_key_t *pk, player_t *players);
  * @return 1 if the signature is valid, 0 otherwise.
  */
 uint8_t verify(context_t *ctx, public_key_t *pk, const char *m, const signature_t *s);
+
+#endif // SCHEME_H
