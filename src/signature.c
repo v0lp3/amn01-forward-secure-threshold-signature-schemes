@@ -19,4 +19,3 @@ void signature_free(signature_t *s)
     mpz_clear(s->z);
     free(s);
 }
-

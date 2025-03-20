@@ -61,4 +61,6 @@ void bench_sign()
     puts("----------------------------------------");
 
     signature_free(signature);
+    gmp_randclear(protocol_parameters.prng);
+    cleanup(&protocol_parameters, &PK, players);
 }

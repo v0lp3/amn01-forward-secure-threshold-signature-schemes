@@ -65,7 +65,7 @@ static inline __attribute__((always_inline)) void dealer_multiplicative_compute_
  * @brief This function is used in the polynomial protocol to compute the value of the public key.
  *
  */
-static inline __attribute__((always_inline)) void dealer_polynomial_compute_public_key_i(public_key_t* pk, mpz_t s, uint32_t key_idx)
+static inline __attribute__((always_inline)) void dealer_polynomial_compute_public_key_i(public_key_t *pk, mpz_t s, uint32_t key_idx)
 {
     mpz_init_set(pk->U[key_idx], s);
 
@@ -76,7 +76,7 @@ static inline __attribute__((always_inline)) void dealer_polynomial_compute_publ
  * @brief Dealer uses shamir secret sharing in the keygen to generate shares of the key.
  *
  */
-static inline __attribute__((always_inline)) void dealer_uses_shamir_ss(context_t* ctx, public_key_t* pk, mpz_point_t *out, mpz_t s)
+static inline __attribute__((always_inline)) void dealer_uses_shamir_ss(context_t *ctx, public_key_t *pk, mpz_point_t *out, mpz_t s)
 {
     shamir_ss(out, ctx->n, s, ctx->threshold, ctx->prng, pk->N);
 }

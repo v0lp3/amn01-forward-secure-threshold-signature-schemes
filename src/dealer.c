@@ -1,6 +1,6 @@
 #include "../include/dealer.h"
 
-void dealer_init_modulo(context_t* ctx, public_key_t* pk)
+void dealer_init_modulo(context_t *ctx, public_key_t *pk)
 {
     mpz_t p, q;
 
@@ -18,7 +18,7 @@ void dealer_init_modulo(context_t* ctx, public_key_t* pk)
     mpz_clears(p, q, NULL);
 }
 
-void dealer_init_players(context_t* ctx, public_key_t* pk, player_t* players)
+void dealer_init_players(context_t *ctx, public_key_t *pk, player_t *players)
 {
     for (uint32_t i = 0; i < ctx->n; i++)
     {
@@ -34,7 +34,7 @@ void dealer_init_players(context_t* ctx, public_key_t* pk, player_t* players)
     }
 }
 
-void dealer_init_pk(context_t* ctx, public_key_t* pk)
+void dealer_init_pk(context_t *ctx, public_key_t *pk)
 {
     pk->T = ctx->T;
     pk->U = (mpz_t *)malloc(ctx->l * sizeof(mpz_t));

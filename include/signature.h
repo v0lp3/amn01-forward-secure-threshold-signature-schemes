@@ -18,4 +18,3 @@ signature_t *signature_malloc(mpz_t y, mpz_t z, uint8_t j);
  * @param[in] s Pointer to the `signature_t` structure to be freed.
  */
 void signature_free(signature_t *s);
-

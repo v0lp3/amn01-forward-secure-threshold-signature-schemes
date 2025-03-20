@@ -61,7 +61,6 @@ void mpz_double_pow(mpz_t dst, uint32_t T, uint32_t j, mpz_t N)
     mpz_clear(exponent);
 }
 
-
 uint8_t *compute_hash_digest(const char *m, uint32_t hash_len)
 {
     if (!m || hash_len == 0)
@@ -70,20 +69,20 @@ uint8_t *compute_hash_digest(const char *m, uint32_t hash_len)
     }
 
     struct hash_context ctx;
-    
+
     uint8_t *digests = (uint8_t *)calloc(hash_len, sizeof(uint8_t));
-    
+
     if (!digests)
     {
-        return NULL; 
+        return NULL;
     }
 
     hash_function_init(&ctx);
-    
+
     hash_function_update(&ctx, (uint32_t)strlen(m), (const uint8_t *)m);
-    
+
     hash_function_digest(&ctx, hash_len, digests);
-    
+
     return digests;
 }
 
